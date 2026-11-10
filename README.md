@@ -21,4 +21,8 @@ git clone https://github.com/Eng-Osama-Sadek/osama-sadek.dev.git
 cd osama-sadek.dev
 npm install
 cp .env.example .env.local
+<<<<<<< Updated upstream
 npm run dev
+=======
+npm run dev
+>>>>>>> Stashed changes
