@@ -114,7 +114,7 @@ export default function AboutPage() {
                 <div className="absolute -inset-4 rounded-full bg-brand-gradient opacity-30 blur-3xl" />
                 <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-white/10">
                   <Image
-                    src="https://github.com/Eng-Osama-Sadek.png"
+                    src="/osama-profile.jpg"
                     alt={siteConfig.name}
                     fill
                     priority
