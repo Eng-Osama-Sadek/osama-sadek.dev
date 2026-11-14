@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  isAdmin       Boolean   @default(false)
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  testimonials  Testimonial[]
+  contacts      Contact[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String
+  title       String
+  tagline     String
+  description String    @db.Text
+  category    String    @default("Web")
+  coverImage  String?
+  videoUrl    String?
+  liveUrl     String?
+  githubUrl   String?
+  githubRepo  String?
+  techStack   String[]
+  features    String[]
+  gallery     String[]
+  year        Int       @default(2025)
+  featured    Boolean   @default(false)
+  published   Boolean   @default(true)
+  order       Int       @default(0)
+  stars       Int?
+  forks       Int?
+  language    String?
+  readme      String?   @db.Text
+  lastCommit  DateTime?
+  syncedAt    DateTime?
+  views       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@unique([userId, slug])
+  @@index([userId, published, order])
+  @@index([featured, published])
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  email     String
+  budget    String?
+  timeline  String?
+  message   String   @db.Text
+  status    String    @default("new")
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  @@index([userId, status, createdAt])
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientName String
+  company    String?
+  role       String?
+  avatarUrl  String?
+  quote      String   @db.Text
+  rating     Int      @default(5)
+  status     String    @default("pending")
+  createdAt  DateTime @default(now())
+  @@index([userId, status])
+}
