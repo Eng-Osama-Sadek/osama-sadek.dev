@@ -15,3 +15,4 @@ next-env.d.ts
 *.tsbuildinfo
 .next
 node_modules
+.env*

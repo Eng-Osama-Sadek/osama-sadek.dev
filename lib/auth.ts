@@ -15,17 +15,25 @@ const baseAdapter = PrismaAdapter(prisma) as Adapter;
 // (e.g. refresh_token_expires_in) so linking the account never fails.
 const adapter: Adapter = {
   ...baseAdapter,
-  linkAccount: (account: AdapterAccount) => {
+  linkAccount: async (account: AdapterAccount) => {
     const { refresh_token_expires_in, ...rest } = account as Record<string, unknown>;
     void refresh_token_expires_in;
-    return baseAdapter.linkAccount!(rest as AdapterAccount);
+    try {
+      return await baseAdapter.linkAccount!(rest as AdapterAccount);
+    } catch (e) {
+      // The callback can be requested twice (dev double-request / retry).
+      // If the account is already linked (P2002), that is fine.
+      if ((e as { code?: string })?.code === "P2002") return undefined;
+      throw e;
+    }
   },
 };
 
 export const authOptions: NextAuthOptions = {
   adapter,
-  // Prints the real cause of errors (e.g. error=Callback) in the terminal
-  debug: process.env.NODE_ENV === "development",
+  // Off by default: debug logs print OAuth tokens. Enable only when needed
+  // with NEXTAUTH_DEBUG=true in .env.local.
+  debug: process.env.NEXTAUTH_DEBUG === "true",
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
