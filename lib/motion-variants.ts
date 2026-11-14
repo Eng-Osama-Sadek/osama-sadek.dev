@@ -1,7 +1,7 @@
-import type { Transition, Variants } from "framer-motion";
+import type { Variants } from "framer-motion";
 
-export const easeOutExpo: Transition["ease"] = [0.16, 1, 0.3, 1];
-export const easeInOutExpo: Transition["ease"] = [0.87, 0, 0.13, 1];
+export const easeOutExpo: [number, number, number, number] = [0.16, 1, 0.3, 1];
+export const easeInOutExpo: [number, number, number, number] = [0.87, 0, 0.13, 1];
 
 export const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
